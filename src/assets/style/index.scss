@@ -15,6 +15,11 @@ html, body {
     font-size: 16px;
     background: #4A90E2;
   }
+  &.gm-scrollbar-container {
+    .el-table__body-wrapper {
+      overflow: scroll;
+    }
+  }
 }
 
 object.resize-trigger {

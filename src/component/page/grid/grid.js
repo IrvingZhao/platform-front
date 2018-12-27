@@ -2,29 +2,39 @@ import {Table} from "element-ui";
 import ColumnDefine from './columnDefine';
 import GeminiScroll from '@/plugins/geminiScrollbar';
 
-function generateTableData() {
-    let result = [];
-    for (let i = 1; i < 20; i++) {
-        result.push({
-            date: '2016-05-03',
-            name: '王小虎' + i,
-            province: '上海',
-            city: '普陀区',
-            address: '上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄',
-            zip: 200333
-        })
-    }
-    return result;
-}
-
 export default {
     created() {
-        console.info(this);
+    },
+    props: {
+        tableParams: {
+            type: Object,
+            required: true
+        },
+        allConfigColumns: {
+            type: Array,
+            required: true
+        },
+        visibleColumns: Array
+    },
+    computed: {
+        tableParamComputed() {
+            if (!this.tableParams.height) {
+                this.tableParams.height = "auto";
+            }
+            return this.tableParams;
+        },
+        visibleColumnComputed() {
+            if (this.visibleColumns && this.visibleColumns.length > 0) {
+                return this.visibleColumns;
+            }
+            return this.allConfigColumns.map(item => item.key);
+        }
     },
     mounted() {
         setTimeout(() => {
             let table = this.$refs.table;
 
+            //设置表格中滚动条信息
             let div = document.createElement("div");
             div.innerHTML = '<div class="gm-scrollbar -vertical"><div class="thumb"></div></div><div class="gm-scrollbar -horizontal"><div class="thumb"></div></div>';
 
@@ -32,7 +42,9 @@ export default {
             for (let i = div.children.length - 1; i >= 0; i--) {
                 table.$el.appendChild(div.children.item(i));
             }
+            let headHeight = table.$refs.headerWrapper.offsetHeight;
 
+            //初始化滚动条
             let scroll = this.holdObj.scroll = new GeminiScroll({
                 element: table.$el,
                 createElements: false,
@@ -44,24 +56,20 @@ export default {
                 this.updateGridHeight();
             }, 0);
 
-
         }, 0);
+    },
+    updated() {
+        if (this.holdObj.scroll) {
+            setTimeout(() => {
+                this.updateGridHeight();
+            }, 0);
+        }
     },
     data() {
         return {
             holdObj: {
                 scroll: null
             },
-            tableParams: {
-                data: generateTableData(),
-                size: "small",
-                height: "400"
-            },
-            tableHeight: "auto",
-            slotList: [
-                "date", "name", "province", "city", "address", "zip", "operator",
-                "date1", "name1", "province1", "city1", "address1", "zip1",
-            ],
             columnDefineParams: {
                 visible: false,
             }
@@ -69,34 +77,43 @@ export default {
     },
     methods: {
         updateGridHeight() {
-            this.tableParams.height = this.$refs.gridArea.offsetHeight;
-            this.holdObj.scroll.update();
+            this.tableParams.height = this.$refs.gridArea.offsetHeight;//从新设置表格高度
+            this.holdObj.scroll.update();//scroll重新计算滚动区域高度
             setTimeout(() => {
-                let table = this.$refs.table;
-                let offsetHeight = 0;
-                if (table.$refs.bodyWrapper.offsetWidth < table.$refs.bodyWrapper.scrollWidth) {
-                    offsetHeight = this.holdObj.scroll.SCROLLBAR_WIDTH - 6;
-                } else {
-                    offsetHeight = -this.holdObj.scroll.SCROLLBAR_WIDTH + 6;
-                }
+                //获取数据
+                let table = this.$refs.table;//表格组件对象
+                let scrollBarWidth = this.holdObj.scroll.SCROLLBAR_WIDTH;//滚动条宽度
+
+                let wrapperHeight = this.$refs.gridArea.offsetHeight;//表格内容区整体大小
+                let wrapperWidth = this.$refs.gridArea.offsetWidth;//表格内容区域宽度
+
+                let wrapperBodyHeight = wrapperHeight - table.$refs.headerWrapper.offsetHeight;//表格body区域大小
+                //左侧固定列
                 let leftWrapper = table.$refs.fixedWrapper;
                 if (leftWrapper) {
-                    leftWrapper.style.height = (leftWrapper.offsetHeight + Math.abs(offsetHeight)) + "px";
-                    let leftBodyWrapper = leftWrapper.querySelector(".el-table__fixed-body-wrapper");
-                    if (leftBodyWrapper) {
-                        leftBodyWrapper.style.height = (leftBodyWrapper.offsetHeight + offsetHeight) + "px";
-                    }
+                    //由于滚动条高度由减小，需重新设置 左侧固定列整体高度 及 body 高度
+                    leftWrapper.style.height = wrapperHeight + "px";
+                    table.$refs.fixedBodyWrapper.style.height = (wrapperBodyHeight - 6) + "px";
                 }
+                //右侧固定列，同左侧
                 let rightWrapper = table.$refs.rightFixedWrapper;
                 if (rightWrapper) {
-                    rightWrapper.style.height = (rightWrapper.offsetHeight + Math.abs(offsetHeight)) + "px";
+                    rightWrapper.style.height = wrapperHeight + "px";
                     rightWrapper.style.right = "6px";
-                    let rightBodyWrapper = rightWrapper.querySelector(".el-table__fixed-body-wrapper");
-                    if (rightBodyWrapper) {
-                        rightBodyWrapper.style.height = (rightBodyWrapper.offsetHeight + offsetHeight) + "px";
-                    }
+                    table.$refs.rightFixedBodyWrapper.style.height = (wrapperBodyHeight - 6) + "px";//去除滚动条区域
+                } else {
+                    //当不具有右侧固定列时，右侧出现滚动条区域预留空间，由于滚动条宽度减少，重新设置 head 和 body区域宽度
+                    table.$refs.bodyWrapper.querySelector(".el-table__body").style.width = (wrapperWidth - 6) + "px";
+                    table.$refs.headerWrapper.querySelector(".el-table__header").style.width = (wrapperWidth + scrollBarWidth - 6) + "px";
                 }
-            }, 20);
+            }, 0);
+        },
+        editColumn() {
+            this.columnDefineParams.visible = true;
+        },
+        updateColumns(val) {
+            this.$refs.table.bodyWrapper.scrollTo(0, 0);
+            this.$emit("updateColumns", val);
         }
     },
     render(_c) {
@@ -105,15 +122,17 @@ export default {
         if (parent.$slots.default) {
             slotEls = [...parent.$slots.default];
         }
-        parent.slotList.forEach((item) => {
+        parent.visibleColumnComputed.forEach((item) => {
             let slotItem = parent.$slots[item];
             if (slotItem && slotItem instanceof Array) {
-                slotItem.forEach((vNodeItem) => {
+                slotItem.forEach((vNodeItem, j) => {
+                    if (!vNodeItem.key) { //如果slot中的节点 没有 key时，补充一个key，避免出现slot渲染问题
+                        vNodeItem.key = item + j;
+                    }
                     slotEls.push(vNodeItem);
                 });
             }
         });
-
         return _c("div", {
             class: "grid",
             ref: "gridArea",
@@ -126,11 +145,19 @@ export default {
                 }
             ],
         }, [
-            _c(Table, {ref: "table", props: parent.tableParams}, slotEls),
+            _c(Table, {class: "gm-scrollbar-container", ref: "table", props: parent.tableParamComputed}, slotEls),
             _c(ColumnDefine, {
-                props: parent.columnDefineParams, on: {
+                ref: "columnDefine",
+                props: {
+                    visible: parent.columnDefineParams.visible,
+                    allConfigColumns: parent.allConfigColumns,
+                    checkedColumns: parent.visibleColumnComputed
+                }, on: {
                     "update:visible"(val) {
                         parent.columnDefineParams.visible = false;
+                    },
+                    "updateColumns"(val) {
+                        parent.updateColumns(val);
                     }
                 }
             })

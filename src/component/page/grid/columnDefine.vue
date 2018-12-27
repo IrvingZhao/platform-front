@@ -4,29 +4,25 @@
             <el-button type="text" @click="checkAll">全选</el-button>
             <el-button type="text" @click="unCheckAll">取消全选</el-button>
         </div>
-        <el-tree :data="columnNodes" node-key="id" default-expand-all draggable :allow-drop="checkDrop"
-                 ref="columnTree">
+        <el-tree :data="columnChecks" node-key="id" default-expand-all draggable :allow-drop="checkDrop"
+                 ref="columnTree" @node-click="nodeClick">
             <span slot-scope="{node,data}">
-                <el-checkbox v-model="data.checked"></el-checkbox>
+                <el-checkbox v-model="checkedMap[node.key]"></el-checkbox>
                 <span style="margin-left: 15px;">{{node.label}}</span>
             </span>
         </el-tree>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="diaVisible = false">取 消</el-button>
+            <el-button type="primary" @click="submit">确 定</el-button>
+        </span>
     </el-dialog>
 </template>
 
 <script>
 
-    function generateColumnNode() {
-        let result = [];
-        for (let i = 0; i < 10; i++) {
-            result.push({id: i, label: "label" + i, checked: false});
-        }
-        return result;
-    }
-
     export default {
         name: "column-define",
-        props: ["visible"],
+        props: ["visible", "allConfigColumns", "checkedColumns"],
         computed: {
             diaVisible: {
                 get() {
@@ -35,33 +31,88 @@
                 set(val) {
                     this.$emit("update:visible", val)
                 }
+            },
+        },
+        watch: {
+            allConfigColumns: "updateColumns",
+            checkedColumns: "updateChecked",
+            visible(newVal) {
+                if (newVal) {
+                    this.checkedMap = {};
+                    this.updateColumns();
+                    this.updateChecked();
+                }
             }
         },
-        created() {
+        mounted() {
+            this.updateColumns();
+            this.updateChecked();
         },
         data() {
             return {
-                columnNodes: generateColumnNode()
+                columnChecks: [],
+                checkedMap: {},
             }
         },
         methods: {
+            submit() {
+                this.diaVisible = false;
+                let nodes = this.$refs.columnTree.children;
+                let checkedKey = [];
+                if (nodes) {
+                    nodes.forEach((item) => {
+                        if (this.checkedMap[item.id]) {
+                            checkedKey.push(item.id);
+                        }
+                    })
+                }
+                this.$emit("updateColumns", checkedKey);
+            },
+            updateColumns() {
+                this.columnChecks = [];
+                if (this.allConfigColumns) {
+                    this.allConfigColumns.forEach((item) => {
+                        this.columnChecks.push({
+                            id: item.key,
+                            label: item.value,
+                        });
+                        if (!this.checkedMap[item.key]) {
+                            this.$set(this.checkedMap, item.key, false);
+                        }
+                    });
+                }
+            },
+            updateChecked() {
+                this.checkedColumns.forEach(item => {
+                    this.$set(this.checkedMap, item, true);
+                });
+            },
+            nodeClick(data) {
+                this.$set(this.checkedMap, data.id, !this.checkedMap[data.id]);
+            },
             checkDrop(draggingNode, dropNode, type) {
                 return type !== 'inner';
             },
             checkAll() {
-                this.columnNodes.forEach((item) => {
-                    item.checked = true;
-                })
+                for (let item in this.checkedMap) {
+                    if (this.checkedMap.hasOwnProperty(item)) {
+                        this.checkedMap[item] = true;
+                    }
+                }
             },
             unCheckAll() {
-                this.columnNodes.forEach((item) => {
-                    item.checked = false;
-                })
+                for (let item in this.checkedMap) {
+                    if (this.checkedMap.hasOwnProperty(item)) {
+                        this.checkedMap[item] = false;
+                    }
+                }
             }
         }
     }
 </script>
 
 <style scoped>
-
+    .operator {
+        padding: 0 20px;
+    }
 </style>
