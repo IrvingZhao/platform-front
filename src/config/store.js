@@ -10,22 +10,28 @@ const getStore = () => {
     if (!store) {
         store = new Vuex.Store({
             strict: process.env.NODE_ENV !== 'production',
-            state: {
-                breadNav: []
-            },
-            mutations: {
-                addBreadNav(state, itemNav) {
-                    state.breadNav.push(itemNav);
-                },
-                set(state, breads) {
-                    state.breadNav = breads || [];
-                },
-                splice(state, index) {
-                    state.breadNav.splice(index);
-                }
-            },
+            state: {},
+            mutations: {},
             actions: {},
-            modules: {}
+            modules: {
+                bread: {
+                    namespaced: true,
+                    state: {
+                        breadNav: []
+                    },
+                    mutations: {
+                        addBreadNav(state, itemNav) {
+                            state.breadNav.push(itemNav);
+                        },
+                        set(state, breads) {
+                            state.breadNav = breads || [];
+                        },
+                        splice(state, index) {
+                            state.breadNav.splice(index);
+                        }
+                    }
+                }
+            }
         });
     }
     return store;
@@ -33,19 +39,19 @@ const getStore = () => {
 
 let breadOperator = {
     set(breads) {
-        store.commit("set", breads);
+        store.commit("bread/set", breads);
         return this;
     },
     push(breadItem) {
-        store.commit("addBreadNav", breadItem);
+        store.commit("bread/addBreadNav", breadItem);
         return this;
     },
     clear() {
-        store.commit("set", []);
+        store.commit("bread/set", []);
         return this;
     },
     splice(index) {
-        store.commit("splice", index);
+        store.commit("bread/splice", index);
     }
 };
 
