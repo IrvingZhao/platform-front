@@ -1,5 +1,4 @@
 <template>
-    <!--<div v-if="formStatus==='normal'" :class="'search-form'+(searchForm.active?' active':'')">-->
     <div v-if="formStatus==='normal'" :class="{'search-form':true,'active':searchForm.active}">
         <div class="form-item-area" v-gemini-scroll="scrollConfig">
             <div class="gm-scrollbar -vertical">
@@ -37,7 +36,7 @@
 <script>
 
     export default {
-        name: "index",
+        name: "xlb-search-form",
         props: {
             searchLabels: Array,
         },
@@ -47,6 +46,7 @@
                     this.formStatus = "mini";
                 } else {
                     this.formStatus = "normal";
+                    this.searchForm.active = false;
                 }
             },
             "searchForm.active"(newVal) {

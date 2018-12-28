@@ -14,7 +14,7 @@
 
 <script>
     export default {
-        name: "scroll-area",
+        name: "xlb-scroll-area",
         created() {
         },
         props: {

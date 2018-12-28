@@ -3,6 +3,7 @@ import ColumnDefine from './columnDefine';
 import GeminiScroll from '@/plugins/geminiScrollbar';
 
 export default {
+    name: "xlb-config-column-grid",
     created() {
     },
     props: {
@@ -133,7 +134,6 @@ export default {
                 });
             }
         });
-        console.info(me.$slots.defaultRight);
 
         if (me.$slots.defaultRight) {
             me.$slots.defaultRight.forEach(item => {
@@ -142,8 +142,11 @@ export default {
         }
 
         return _c("div", {
-            class: "grid",
             ref: "gridArea",
+            style: {
+                width: "100%",
+                height: "100%"
+            },
             directives: [
                 {
                     name: "resize",
