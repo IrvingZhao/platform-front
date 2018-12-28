@@ -1,13 +1,15 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
+//空白页面
+import BlankPage from '../component/page/BlankPage';
+//子模块routers
 import DemoPageRoute from '../modules/demo/config/router';
-//
-// import SystemRoute from '../modules/system/config/router';
+import SystemRouter from '../modules/system/router';
 
 Vue.use(VueRouter);
 
-const Page404 = () => import(/* webpackChunkName: "error/404" */ '../component/public/404');
+const Page404 = () => import(/* webpackChunkName: "error/404" */ '../component/page/404');
 const MainPage = () => import(/* webpackChunkName: "index" */ "../modules/main/pages/Main");
 
 
@@ -23,6 +25,12 @@ let routeConfig = [
         component: MainPage,
         children: [
             DemoPageRoute,
+            {
+                name: "system",
+                path: "system",
+                component: BlankPage,
+                children: SystemRouter
+            },
             {
                 name: "*",
                 path: "*",

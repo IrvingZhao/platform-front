@@ -1,4 +1,5 @@
-const PageIndex = () => import(/* webpackChunkName: "page" */ "../../../component/public/BlankPage");
+import PageIndex from '../../../component/page/BlankPage';
+
 const PageList = () => import(/* webpackChunkName: "page" */ "../pages/list");
 const PageEdit = () => import(/* webpackChunkName: "page-edit"*/ "../pages/edit");
 const PageScroll = () => import(/* webpackChunkName: "page-scroll" */ "../pages/scrollAreaTest");
