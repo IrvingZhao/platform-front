@@ -117,13 +117,13 @@ export default {
         }
     },
     render(_c) {
-        let parent = this;
+        let me = this;
         let slotEls = [];
-        if (parent.$slots.default) {
-            slotEls = [...parent.$slots.default];
+        if (me.$slots.default) {
+            slotEls = [...me.$slots.default];
         }
-        parent.visibleColumnComputed.forEach((item) => {
-            let slotItem = parent.$slots[item];
+        me.visibleColumnComputed.forEach((item) => {
+            let slotItem = me.$slots[item];
             if (slotItem && slotItem instanceof Array) {
                 slotItem.forEach((vNodeItem, j) => {
                     if (!vNodeItem.key) { //如果slot中的节点 没有 key时，补充一个key，避免出现slot渲染问题
@@ -133,6 +133,14 @@ export default {
                 });
             }
         });
+        console.info(me.$slots.defaultRight);
+
+        if (me.$slots.defaultRight) {
+            me.$slots.defaultRight.forEach(item => {
+                slotEls.push(item);
+            })
+        }
+
         return _c("div", {
             class: "grid",
             ref: "gridArea",
@@ -140,24 +148,24 @@ export default {
                 {
                     name: "resize",
                     value() {
-                        parent.updateGridHeight();
+                        me.updateGridHeight();
                     }
                 }
             ],
         }, [
-            _c(Table, {class: "gm-scrollbar-container", ref: "table", props: parent.tableParamComputed}, slotEls),
+            _c(Table, {class: "gm-scrollbar-container", ref: "table", props: me.tableParamComputed}, slotEls),
             _c(ColumnDefine, {
                 ref: "columnDefine",
                 props: {
-                    visible: parent.columnDefineParams.visible,
-                    allConfigColumns: parent.allConfigColumns,
-                    checkedColumns: parent.visibleColumnComputed
+                    visible: me.columnDefineParams.visible,
+                    allConfigColumns: me.allConfigColumns,
+                    checkedColumns: me.visibleColumnComputed
                 }, on: {
                     "update:visible"(val) {
-                        parent.columnDefineParams.visible = false;
+                        me.columnDefineParams.visible = false;
                     },
                     "updateColumns"(val) {
-                        parent.updateColumns(val);
+                        me.updateColumns(val);
                     }
                 }
             })
