@@ -19,6 +19,9 @@ const getStore = () => {
                 },
                 set(state, breads) {
                     state.breadNav = breads || [];
+                },
+                splice(state, index) {
+                    state.breadNav.splice(index);
                 }
             },
             actions: {},
@@ -40,6 +43,9 @@ let breadOperator = {
     clear() {
         store.commit("set", []);
         return this;
+    },
+    splice(index) {
+        store.commit("splice", index);
     }
 };
 
