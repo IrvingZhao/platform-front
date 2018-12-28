@@ -1,24 +1,27 @@
 <template>
-    <div class="page-content">
-        <search-form :search-labels="smallData" @search="search" @reset="reset" @clearItem="clearItem">
+    <xlb-base-page>
+        <xlb-search-form slot="searchForm" :search-labels="smallData" @search="search" @reset="reset"
+                         @clearItem="clearItem">
             <div class="search-form-item" v-for="i in 10" :key="i">
                 <div class="form-label">测试label{{i}}：</div>
                 <el-input v-model="searchForm['param'+i]"></el-input>
             </div>
-        </search-form>
-        <div class="tool-bar">
-            <div class="left-toolbar">
-                <span class="page-title">订单流水</span>
-            </div>
-            <div class="right-toolbar">
-                <el-button size="small">按钮3</el-button>
-                <el-button size="small">按钮4</el-button>
-                <el-button size="small" icon="el-icon-my-user-define" @click="customColumn">自定义列
+        </xlb-search-form>
+        <xlb-toolbar slot="toolBar">
+            <template slot="pageTitle">订单流水</template>
+            <xlb-config-slot :slot-keys="['a','b','c']">
+                <el-button size="small" slot="a">按钮3</el-button>
+                <el-button size="small" slot="b">按钮4</el-button>
+                <template slot="c">
+                    <el-button size="small">slot 按钮1</el-button>
+                    <el-button size="small">slot 按钮2</el-button>
+                </template>
+                <el-button size="small" icon="el-icon-my-user-define">自定义列
                 </el-button>
-            </div>
-        </div>
-        <grid-js ref="grid" :table-params="tableParams" :all-config-columns="allTableColumns"
-                 :visible-columns.sync="visibleColumns" @updateColumns="updateColumns">
+            </xlb-config-slot>
+        </xlb-toolbar>
+        <xlb-config-column-grid slot="grid" ref="grid" :table-params="tableParams" :all-config-columns="allTableColumns"
+                                :visible-columns.sync="visibleColumns" @updateColumns="updateColumns">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column fixed prop="date" label="日期" min-width="250"></el-table-column>
             <el-table-column slot="name" prop="name" label="姓名" min-width="200">
@@ -26,6 +29,9 @@
                     {{scope.row.name}}
                 </template>
             </el-table-column>
+            <template slot="defaultRight">
+                <el-table-column prop="zip" label="邮编-右侧最后" min-width="200"></el-table-column>
+            </template>
             <el-table-column slot="province" prop="province" label="省份"
                              min-width="200"></el-table-column>
             <el-table-column slot="city" prop="city" label="市区" min-width="200"></el-table-column>
@@ -44,8 +50,8 @@
                     <el-button>测试</el-button>
                 </template>
             </el-table-column>
-        </grid-js>
-        <div class="pagination">
+        </xlb-config-column-grid>
+        <div slot="pagination" class="pagination">
             <el-pagination
                     :page-sizes="[100, 200, 300, 400]"
                     :page-size="100"
@@ -54,7 +60,7 @@
             </el-pagination>
         </div>
 
-    </div>
+    </xlb-base-page>
 </template>
 
 <script>
@@ -93,13 +99,8 @@
         return result;
     }
 
-    import SearchForm from '../../../component/page/searchForm';
-
-    import GridJs from '../../../component/page/grid/grid';
-
     export default {
         name: "index",
-        components: {SearchForm, GridJs},
         data() {
             return {
                 searchForm: getSearchFormData(),
@@ -115,6 +116,7 @@
             }
         },
         created() {
+            console.info(this);
         },
         mounted() {
             this.$bread.set([
@@ -201,20 +203,6 @@
 
     .tool-bar {
         flex: 0 0 32px;
-        display: flex;
-        justify-content: space-between;
-        margin: 15px 0;
-        .left-toolbar {
-            flex: 0 0 auto;
-            .page-title {
-                color: #303133;
-                font-size: 24px;
-                font-weight: bold;
-            }
-        }
-        .right-toolbar {
-            flex: 0 0 auto;
-        }
     }
 
     .grid {
