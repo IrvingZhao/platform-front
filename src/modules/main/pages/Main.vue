@@ -18,7 +18,8 @@
                 <div class="bread-nav">
                     <template v-for="(item,index) in breadList">
                         <span class="bread-split" v-if="index!==0">/</span>
-                        <span :class="'bread-item'+(item.path?' point':'')">{{item.name}}</span>
+                        <span :class="{'bread-item':true,'point':item.path||item.click}"
+                              @click="breadClick(item,index)">{{item.name}}</span>
                     </template>
                 </div>
                 <div class="head-split"></div>
@@ -71,6 +72,14 @@
             }
         },
         methods: {
+            breadClick(item, index) {
+                if (item.path) {
+                    this.$router.push(item.path);
+                } else if (item.click) {
+                    this.item.click();
+                    this.$bread.splice(index + 1);
+                }
+            },
             toggleMenu() {
                 this.isCollapse = !this.isCollapse;
             },
