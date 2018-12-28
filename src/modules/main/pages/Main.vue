@@ -68,7 +68,7 @@
         },
         computed: {
             breadList() {
-                return this.$store.state.breadNav;
+                return this.$store.state.bread.breadNav;
             }
         },
         methods: {
@@ -93,8 +93,6 @@
                 }
             },
             menuOpen() {
-                console.info("menu open");
-                console.info(this.scrollBarParam);
                 if (this.scrollBarParam.instance) {
                     setTimeout(() => {
                         this.scrollBarParam.instance.update();
