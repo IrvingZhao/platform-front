@@ -1,4 +1,3 @@
-import {Table} from "element-ui";
 import ColumnDefine from './columnDefine';
 import GeminiScroll from '@/plugins/geminiScrollbar';
 
@@ -156,7 +155,7 @@ export default {
                 }
             ],
         }, [
-            _c(Table, {class: "gm-scrollbar-container", ref: "table", props: me.tableParamComputed}, slotEls),
+            _c("el-table", {class: "gm-scrollbar-container", ref: "table", props: me.tableParamComputed}, slotEls),
             _c(ColumnDefine, {
                 ref: "columnDefine",
                 props: {
