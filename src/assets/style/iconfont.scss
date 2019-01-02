@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'iconfont';  /* project id 903961 */
-  src: url('//at.alicdn.com/t/font_903961_wadry37b52f.eot');
-  src: url('//at.alicdn.com/t/font_903961_wadry37b52f.eot?#iefix') format('embedded-opentype'),
-  url('//at.alicdn.com/t/font_903961_wadry37b52f.woff') format('woff'),
-  url('//at.alicdn.com/t/font_903961_wadry37b52f.ttf') format('truetype'),
-  url('//at.alicdn.com/t/font_903961_wadry37b52f.svg#iconfont') format('svg');
+  src: url('//at.alicdn.com/t/font_903961_bj1lv7k24l.eot');
+  src: url('//at.alicdn.com/t/font_903961_bj1lv7k24l.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_903961_bj1lv7k24l.woff') format('woff'),
+  url('//at.alicdn.com/t/font_903961_bj1lv7k24l.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_903961_bj1lv7k24l.svg#iconfont') format('svg');
 }
 
 *[class^="el-icon-my"], *[class*=" el-icon-my"] {
@@ -14,6 +14,18 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.el-icon-my-folder-close:before {
+  content: '\e648';
+}
+
+.el-icon-my-folder-open:before {
+  content: '\e646';
+}
+
+.el-icon-my-file:before {
+  content: '\e647';
 }
 
 .el-icon-my-arrow-top:before {
