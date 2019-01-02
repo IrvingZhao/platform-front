@@ -32,6 +32,7 @@ function ResizeHandle(param) {
 }
 
 export default {
+    name: "resize",
     bind(el, binding) {
         let resizeHandle = new ResizeHandle({
             element: el,

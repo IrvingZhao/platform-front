@@ -1,8 +1,9 @@
 // import GeminiScrollbar from 'gemini-scrollbar';
-import GeminiScrollbar from '../geminiScrollbar/index';
-import '../geminiScrollbar/style.css';
+import GeminiScrollbar from '../../geminiScrollbar/index';
+import '../../geminiScrollbar/style.css';
 
 export default {
+    name:"gemini-scroll",
     bind(el, binding) {
         let geminiScrollbar = new GeminiScrollbar({
             element: el,

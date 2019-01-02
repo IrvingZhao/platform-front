@@ -44,6 +44,7 @@ function scrollListener(e) {
 }
 
 export default {
+    name: "mock-scroll",
     bind(el) {
         el.style.overflow = "hidden";
         addEvent(el, "mousewheel", scrollListener);
